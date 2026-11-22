@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mes_taches/modele/tache.dart';
 import 'package:mes_taches/modele/taches.dart';
 
@@ -19,10 +19,7 @@ class DetailTache extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(
-            tache.title,
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
+          Text(tache.title, style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 16),
 
           // Priorité
@@ -45,19 +42,15 @@ class DetailTache extends StatelessWidget {
           _Ligne(
             label: 'Note',
             valeur: (tache.note == null || tache.note!.isEmpty)
-                ? 'aucune note'
+                ? 'pas de note'
                 : tache.note!,
           ),
 
           // État
-          _Ligne(
-            label: 'État',
-            valeur: tache.done ? 'faite' : 'à faire',
-          ),
+          _Ligne(label: 'État', valeur: tache.done ? 'faite' : 'à faire'),
 
           const SizedBox(height: 24),
 
-         
           FilledButton.icon(
             onPressed: () {
               Navigator.pop(context, tache.copyWith(faite: !tache.done));

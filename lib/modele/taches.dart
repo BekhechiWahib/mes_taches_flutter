@@ -1,9 +1,6 @@
-
 import 'echeance.dart';
 import 'tache.dart';
- 
- 
- 
+
 Priority? prioriteDepuisCode(String code) {
   switch (code) {
     case 'low':
@@ -17,15 +14,14 @@ Priority? prioriteDepuisCode(String code) {
   }
 }
 
-Tache tacheDepuisJson(Map<String, Object?> json){
-   final id = json['id'];
-   final title = json['title'];
-   final priorityCode= json['priority'];
-   final noteBrute = json['note'];
-   final due = json['due'];
-   final done = json['done'];
-   
-    
+Tache tacheDepuisJson(Map<String, Object?> json) {
+  final id = json['id'];
+  final title = json['title'];
+  final priorityCode = json['priority'];
+  final noteBrute = json['note'];
+  final due = json['due'];
+  final done = json['done'];
+
   if (id is! String || id.trim().isEmpty) {
     throw FormatException('id invalide');
   }
@@ -36,7 +32,9 @@ Tache tacheDepuisJson(Map<String, Object?> json){
     throw FormatException('done invalide');
   }
 
-  final priorite = priorityCode is String ? prioriteDepuisCode(priorityCode) : null;
+  final priorite = priorityCode is String
+      ? prioriteDepuisCode(priorityCode)
+      : null;
   if (priorite == null) {
     throw FormatException('priority invalide');
   }
@@ -59,10 +57,10 @@ Tache tacheDepuisJson(Map<String, Object?> json){
     priority: priorite,
     due: d,
     note: note,
-    done: done    
-    );
+    done: done,
+  );
 
-    return newTache;
+  return newTache;
 }
 
 String libelleEcheance(Echeance echeance) {
@@ -88,68 +86,73 @@ String libelleEcheance(Echeance echeance) {
   }
 }
 
-bool estEnRetard (Tache tache,{required DateTime aujourdhui}){
+bool estEnRetard(Tache tache, {required DateTime aujourdhui}) {
+  if (tache.done) return false;
+  if (tache.due.type != TypeEcheance.date) return false;
 
-   if (tache.done) return false;
-   if (tache.due.type != TypeEcheance.date) return false;
+  DateTime d = tache.due.date!;
+  DateTime dateDue = DateTime(d.year, d.month, d.day);
+  DateTime dateToday = DateTime(
+    aujourdhui.year,
+    aujourdhui.month,
+    aujourdhui.day,
+  );
 
-   DateTime d = tache.due.date!;
-   DateTime dateDue = DateTime(d.year, d.month, d.day);
-   DateTime dateToday = DateTime(aujourdhui.year, aujourdhui.month, aujourdhui.day);
-
-   return dateDue.isBefore(dateToday);
-  
+  return dateDue.isBefore(dateToday);
 }
 
-({int faites, int total}) bilan(Iterable<Tache> taches){
-    int nbFaites = 0;
-    int nbTotal = 0;
+({int faites, int total}) bilan(Iterable<Tache> taches) {
+  int nbFaites = 0;
+  int nbTotal = 0;
 
-   if(taches.isEmpty) return (faites: 0, total: 0);
+  if (taches.isEmpty) return (faites: 0, total: 0);
 
-   for(Tache t in taches){
-       if(t.done){nbFaites++;nbTotal++;}
-       else{nbTotal++;}
-   }
-
-  return(faites : nbFaites,total : nbTotal);
-}
-
-List<Tache> aFaire(Iterable<Tache> taches, {Priority auMoins = Priority.low}) { 
-   List<Tache> newList = [];
-   for(Tache t in taches){
-       if(!t.done){
-          if(t.priority.index >= auMoins.index){
-            newList.add(t);
-          }
-       }
-   }
-   newList.sort((a, b) {
-      // Comparer les priorités (décroissant : haute avant basse)
-      final parPriorite = b.priority.index.compareTo(a.priority.index);
-      if (parPriorite != 0) {
-        return parPriorite;
-      }
-
-      // Priorités égales : comparer les titres (croissant : A avant B)
-      return a.title.compareTo(b.title);
-    });
-
- return newList;
- }
-
-
- Echeance parseEcheance(Object? echeance) {
-    if (echeance == null) {
-      return const Echeance.none();
+  for (Tache t in taches) {
+    if (t.done) {
+      nbFaites++;
+      nbTotal++;
+    } else {
+      nbTotal++;
     }
-    if (echeance is! String) {
-      throw FormatException('"due" doit être une chaîne AAAA-MM-JJ ou null');
-    }
-    final date = DateTime.tryParse(echeance); 
-    if (date == null) {
-      throw FormatException('"due" invalide : $echeance');
-    }
-   
-      return Echeance.date(DateTime(date.year, date.month, date.day));
   }
+
+  return (faites: nbFaites, total: nbTotal);
+}
+
+List<Tache> aFaire(Iterable<Tache> taches, {Priority auMoins = Priority.low}) {
+  List<Tache> newList = [];
+  for (Tache t in taches) {
+    if (!t.done) {
+      if (t.priority.index >= auMoins.index) {
+        newList.add(t);
+      }
+    }
+  }
+  newList.sort((a, b) {
+    // Comparer les priorités (décroissant : haute avant basse)
+    final parPriorite = b.priority.index.compareTo(a.priority.index);
+    if (parPriorite != 0) {
+      return parPriorite;
+    }
+
+    // Priorités égales : comparer les titres (croissant : A avant B)
+    return a.title.compareTo(b.title);
+  });
+
+  return newList;
+}
+
+Echeance parseEcheance(Object? echeance) {
+  if (echeance == null) {
+    return const Echeance.none();
+  }
+  if (echeance is! String) {
+    throw FormatException('"due" doit être une chaîne AAAA-MM-JJ ou null');
+  }
+  final date = DateTime.tryParse(echeance);
+  if (date == null) {
+    throw FormatException('"due" invalide : $echeance');
+  }
+
+  return Echeance.date(DateTime(date.year, date.month, date.day));
+}

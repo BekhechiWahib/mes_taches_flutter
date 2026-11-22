@@ -1,7 +1,7 @@
 // « Mes tâches », un gestionnaire de tâches personnel.
 // Point d'entrée : runApp() attache la racine de l'arbre de widgets à l'écran.
 // Tout le reste est une composition de widgets.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mes_taches/pages/page_taches.dart';
 
 void main() => runApp(const MesTachesApp());

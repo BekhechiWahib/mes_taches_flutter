@@ -74,28 +74,48 @@ void main() {
 
     test('lève FormatException si id vide', () {
       expect(
-        () => tacheDepuisJson({'id': '', 'title': 'x', 'priority': 'low', 'done': false}),
+        () => tacheDepuisJson({
+          'id': '',
+          'title': 'x',
+          'priority': 'low',
+          'done': false,
+        }),
         throwsFormatException,
       );
     });
 
     test('lève FormatException si title vide', () {
       expect(
-        () => tacheDepuisJson({'id': 'a', 'title': '  ', 'priority': 'low', 'done': false}),
+        () => tacheDepuisJson({
+          'id': 'a',
+          'title': '  ',
+          'priority': 'low',
+          'done': false,
+        }),
         throwsFormatException,
       );
     });
 
     test('lève FormatException si priority inconnue', () {
       expect(
-        () => tacheDepuisJson({'id': 'a', 'title': 'x', 'priority': 'urgent', 'done': false}),
+        () => tacheDepuisJson({
+          'id': 'a',
+          'title': 'x',
+          'priority': 'urgent',
+          'done': false,
+        }),
         throwsFormatException,
       );
     });
 
     test('lève FormatException si done n\'est pas un booléen', () {
       expect(
-        () => tacheDepuisJson({'id': 'a', 'title': 'x', 'priority': 'low', 'done': 'non'}),
+        () => tacheDepuisJson({
+          'id': 'a',
+          'title': 'x',
+          'priority': 'low',
+          'done': 'non',
+        }),
         throwsFormatException,
       );
     });
@@ -123,14 +143,14 @@ void main() {
     });
 
     test('date', () {
-      expect(libelleEcheance(Echeance.date(DateTime(2026, 12, 1))), 'pour le 1/12');
+      expect(
+        libelleEcheance(Echeance.date(DateTime(2026, 12, 1))),
+        'pour le 1/12',
+      );
     });
 
     test('hebdomadaire', () {
-      expect(
-        libelleEcheance(Echeance.weekly(6)),
-        'chaque samedi',
-      );
+      expect(libelleEcheance(Echeance.weekly(6)), 'chaque samedi');
     });
   });
 
@@ -222,7 +242,12 @@ void main() {
 
     test('filtre les tâches faites et trie par priorité puis titre', () {
       final resultat = aFaire(taches);
-      expect(resultat.map((t) => t.title), ['Passeport', 'Banque', 'Dentiste', 'Courses']);
+      expect(resultat.map((t) => t.title), [
+        'Passeport',
+        'Banque',
+        'Dentiste',
+        'Courses',
+      ]);
     });
 
     test('respecte auMoins: normale', () {

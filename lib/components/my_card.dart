@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mes_taches/modele/tache.dart';
 import 'package:mes_taches/modele/taches.dart'; // pour libelleEcheance, estEnRetard
 
@@ -16,9 +16,6 @@ class MyCard extends StatelessWidget {
     required this.onToggle,
   });
 
-
- 
- 
   @override
   Widget build(BuildContext context) {
     final enRetard = estEnRetard(tache, aujourdhui: DateTime.now());
@@ -27,10 +24,7 @@ class MyCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: ListTile(
         onTap: () => ouvrirDetail(),
-        leading: Checkbox(
-          value: tache.done,
-          onChanged: (_) => onToggle(),
-        ),
+        leading: Checkbox(value: tache.done, onChanged: (_) => onToggle()),
         title: Text(
           tache.title,
           maxLines: 1,
@@ -47,11 +41,9 @@ class MyCard extends StatelessWidget {
             fontWeight: enRetard ? FontWeight.bold : null,
           ),
         ),
-       trailing: Row(
+        trailing: Row(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            _PastillePriority(priority: tache.priority),
-          ],
+          children: [_PastillePriority(priority: tache.priority)],
         ),
       ),
     );
@@ -88,5 +80,3 @@ class _PastillePriority extends StatelessWidget {
     );
   }
 }
-
-

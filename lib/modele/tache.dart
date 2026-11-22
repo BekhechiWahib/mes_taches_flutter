@@ -1,10 +1,6 @@
 import 'package:mes_taches/modele/echeance.dart';
 
-enum Priority {
-  low,
-  normal,
-  high
-}
+enum Priority { low, normal, high }
 
 class Tache {
   final String id;
@@ -23,22 +19,21 @@ class Tache {
     this.done = false,
   });
 
-Tache copyWith({
-  String? titre,
-  Priority? priorite,
-  Echeance? echeance,
-  String? note,
-  bool? faite,
-  bool effacerNote = false,
-}) {
-  return Tache(
-    id: id, // l'id ne change jamais
-    title: titre ?? title,
-    priority: priorite ?? priority,
-    due: echeance ?? due,
-    note: effacerNote ? null : (note ?? this.note),
-    done: faite ?? done,
-  );
-}
-
+  Tache copyWith({
+    String? titre,
+    Priority? priorite,
+    Echeance? echeance,
+    String? note,
+    bool? faite,
+    bool effacerNote = false,
+  }) {
+    return Tache(
+      id: id, // l'id ne change jamais
+      title: titre ?? title,
+      priority: priorite ?? priority,
+      due: echeance ?? due,
+      note: effacerNote ? null : (note ?? this.note),
+      done: faite ?? done,
+    );
+  }
 }
