@@ -5,12 +5,14 @@ import 'package:mes_taches/modele/taches.dart'; // pour libelleEcheance, estEnRe
 class MyCard extends StatelessWidget {
   // 1. Les champs
   final Tache tache;
+  final Function ouvrirDetail;
   final VoidCallback onToggle;
 
   // 2. Le constructeur
   const MyCard({
     super.key,
     required this.tache,
+    required this.ouvrirDetail,
     required this.onToggle,
   });
 
@@ -24,6 +26,7 @@ class MyCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: ListTile(
+        onTap: () => ouvrirDetail(),
         leading: Checkbox(
           value: tache.done,
           onChanged: (_) => onToggle(),

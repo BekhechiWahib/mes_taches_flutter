@@ -5,6 +5,7 @@ import 'package:mes_taches/components/my_card.dart';
 import 'package:mes_taches/modele/tache.dart';
 import 'package:mes_taches/modele/taches.dart';
 import 'package:mes_taches/donnees/exemples.dart';
+import 'package:mes_taches/pages/detail_tache.dart';
 
 class PageTaches extends StatefulWidget {
   const PageTaches({super.key});
@@ -12,6 +13,10 @@ class PageTaches extends StatefulWidget {
   @override
   State<PageTaches> createState() => _PageTachesState();
 }
+
+
+enum Filtre { toutes, aFaire, faites }
+
 
 class _PageTachesState extends State<PageTaches> {
   late final List<Tache> _taches;
@@ -41,12 +46,12 @@ class _PageTachesState extends State<PageTaches> {
     });
   }
 
-  void _ajouterExemple() {
+  void _ajouterExemple(String title) {
     setState(() {
       _taches.add(
         Tache(
           id: 'exemple-${DateTime.now().microsecondsSinceEpoch}',
-          title: 'Nouvelle tâche d\'exemple',
+          title: title,
           priority: Priority.normal,
         ),
       );
@@ -70,12 +75,7 @@ class _PageTachesState extends State<PageTaches> {
           ),
           FilledButton(
             onPressed: () {
-              setState(() {
-                _taches.add(Tache(
-                  id: 't-${DateTime.now().microsecondsSinceEpoch}',
-                  title: _nouveauTitre,
-                ));
-              });
+              _ajouterExemple(_nouveauTitre);
               Navigator.pop(context);
             },
             child: const Text('Ajouter'),
@@ -87,11 +87,38 @@ class _PageTachesState extends State<PageTaches> {
 }
 
 
+Future<void> _ouvrirDetail(Tache tache) async {
+  final modifiee = await Navigator.push<Tache>(
+    context,
+    MaterialPageRoute(builder: (_) => DetailTache(tache: tache)),
+  );
 
-   
+  if (modifiee == null) return; // simple retour, pas d'action
+  if (!mounted) return;
+
+  setState(() {
+    final index = _taches.indexWhere((t) => t.id == modifiee.id);
+    if (index != -1) {
+      _taches[index] = modifiee; // remplace par la version modifiée
+    }
+  });
+}
+
+ final itemsFiltre = ['Toutes','à Faire','Faites'];
+  String? selectedFiltre;
+
+ 
 
   @override
   Widget build(BuildContext context) {
+
+    final visibles = _taches.where((t) {
+          if (selectedFiltre == 'à Faire') return !t.done;
+          if (selectedFiltre == 'Faites') return t.done;
+          return true;
+        }).toList();
+
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mes tâches'),
@@ -99,23 +126,71 @@ class _PageTachesState extends State<PageTaches> {
         ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                '$_nbAFaire à faire',
-                style: Theme.of(context).textTheme.titleMedium,
+           Row(
+            crossAxisAlignment:CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '$_nbAFaire à faire',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
               ),
-            ),
-          ),
+
+             Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey[300]!),
+                  ),
+                  child: DropdownButton<String>(
+                    value: selectedFiltre,
+                    underline: const SizedBox.shrink(),
+                    borderRadius: BorderRadius.circular(12),
+                    items: itemsFiltre.map(buildMenuItem).toList(),
+                    onChanged: (value) {
+                      if (value == null) return;
+                      setState(() => selectedFiltre = value);
+                    },
+                  ),
+                ),
+              ),
+            ],
+           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: _taches.length,
+            child: 
+            (visibles.isEmpty)?
+            Center(
+              child: Text.rich(
+                TextSpan(
+                  text: 'Liste ',
+                  style: const TextStyle(fontSize: 20,),
+                  children: [
+                    TextSpan(
+                      text: '< $selectedFiltre >',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black, // ou la couleur que tu veux
+                      ),
+                    ),
+                    const TextSpan(text: ' est vide.'),
+                  ],
+                ),
+              ),
+            )      : ListView.builder(
+              itemCount: visibles.length,
               itemBuilder: (context, index) {
-                final tache = _taches[index];
+                final tache = visibles[index];
                 return MyCard(
                   tache: tache,
+                  ouvrirDetail:() => _ouvrirDetail(tache),
                   onToggle: () => _basculer(tache),
                 );
               },
@@ -129,7 +204,19 @@ class _PageTachesState extends State<PageTaches> {
         label: const Text('Ajouter'),
       ),
     );
+
+   
   }
+   DropdownMenuItem<String> buildMenuItem(String item) => DropdownMenuItem<String>(
+    value: item,
+    child: Row(
+      children: [
+        //Icon(icone, size: 18, color: Colors.grey[700]),
+        const SizedBox(width: 8),
+        Text(item),
+      ],
+    ),
+  );
 }
 
 
